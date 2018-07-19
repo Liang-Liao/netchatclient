@@ -1,4 +1,4 @@
-package netchat.netchatserver;
+package netchat.netchatclient;
 
 /**
  * Hello world!

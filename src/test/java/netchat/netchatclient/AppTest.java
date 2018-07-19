@@ -1,4 +1,4 @@
-package netchat.netchatserver;
+package netchat.netchatclient;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
