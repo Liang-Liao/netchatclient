@@ -14,7 +14,7 @@ public class Client {
         System.out.println("Connecting to hello world server…");
 
         ZMQ.Socket requester = context.socket(ZMQ.REQ);
-        requester.connect("tcp://localhost:5555");
+        requester.connect("tcp://127.0.0.1:5555");
 
         for (int requestNbr = 0; requestNbr != 10; requestNbr++) {
             String request = "Hello";
