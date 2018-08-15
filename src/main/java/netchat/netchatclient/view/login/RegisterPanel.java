@@ -1,32 +1,40 @@
 package netchat.netchatclient.view.login;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Color;
+import com.google.gson.Gson;
+
+import netchat.netchatclient.transfermsg.QPClient;
+import netchat.netchatclient.util.InputVerification;
 
 public class RegisterPanel extends JPanel {
 	private static RegisterPanel registerPanel;
 	private Image loginBgPic;
 	private JTextField tfName;
-	private JTextField tfPassword;
-	private JTextField textField;
+	private JPasswordField tfPassword;
+	private JPasswordField tfRePassword;
+	private JLabel lblPrompt;
 
 	private RegisterPanel() {
 		// 加载背景图片
@@ -75,7 +83,7 @@ public class RegisterPanel extends JPanel {
 		lblPassword.setFont(new Font("宋体", Font.PLAIN, 15));
 		passwordPanel.add(lblPassword);
 		
-		tfPassword = new JTextField();
+		tfPassword = new JPasswordField();
 		passwordPanel.add(tfPassword);
 		tfPassword.setColumns(30);
 		
@@ -84,22 +92,22 @@ public class RegisterPanel extends JPanel {
 		cancelBackground(rePasswordPanel);
 		centerPanel.add(rePasswordPanel);
 		
-		JLabel label = new JLabel("确认密码：");
-		label.setFont(new Font("宋体", Font.PLAIN, 15));
-		rePasswordPanel.add(label);
+		JLabel lblRePassword = new JLabel("确认密码：");
+		lblRePassword.setFont(new Font("宋体", Font.PLAIN, 15));
+		rePasswordPanel.add(lblRePassword);
 		
-		textField = new JTextField();
-		rePasswordPanel.add(textField);
-		textField.setColumns(30);
+		tfRePassword = new JPasswordField();
+		rePasswordPanel.add(tfRePassword);
+		tfRePassword.setColumns(30);
 		
 		JLabel lblTemp = new JLabel("    ");
 		rePasswordPanel.add(lblTemp);
 		
-		JLabel lblAccount = new JLabel("提示信息：");
-		lblAccount.setForeground(Color.RED);
-		lblAccount.setFont(new Font("宋体", Font.PLAIN, 15));
-		lblAccount.setHorizontalAlignment(SwingConstants.CENTER);
-		centerPanel.add(lblAccount);
+		lblPrompt = new JLabel("提示信息：");
+		lblPrompt.setForeground(Color.RED);
+		lblPrompt.setFont(new Font("宋体", Font.PLAIN, 15));
+		lblPrompt.setHorizontalAlignment(SwingConstants.CENTER);
+		centerPanel.add(lblPrompt);
 		
 		//南面组件
 		JPanel southPanel = new JPanel();
@@ -124,6 +132,44 @@ public class RegisterPanel extends JPanel {
 				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 						| UnsupportedLookAndFeelException e1) {
 					e1.printStackTrace();
+				}
+			}
+		});
+		
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String username = tfName.getText();
+				String password = tfPassword.getText();
+				String rePassword = tfRePassword.getText();
+				if (InputVerification.usernameVerfication(username)) {
+					if (InputVerification.passwordVerfication(password)) {
+						if (InputVerification.passwordVerfication(rePassword)) {
+							if (password.equals(rePassword)) {
+								Map<String, Object> map = new HashMap<String, Object>();
+								map.put("cmd", "register");
+								map.put("username", username);
+								map.put("password", password);
+								
+								String data = new Gson().toJson(map);
+								String reply = QPClient.sendAndReceiveMsg1(data);
+								map = new Gson().fromJson(reply, Map.class);
+								String account = (String) map.get("account");
+								if (null != account) {
+									lblPrompt.setText("提示：注册账号为 " + account);
+								}else {
+									lblPrompt.setText("提示：注册失败");
+								}
+							}else {
+								lblPrompt.setText("提示：密码和确认密码不相等");
+							}
+						}else {
+							lblPrompt.setText("提示：确认密码不为空");
+						}
+					}else {
+						lblPrompt.setText("提示：密码不为空");
+					}
+				}else {
+					lblPrompt.setText("提示：昵称不为空");
 				}
 			}
 		});

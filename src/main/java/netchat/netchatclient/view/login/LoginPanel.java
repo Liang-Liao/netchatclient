@@ -11,9 +11,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -27,12 +26,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.google.gson.Gson;
 
-import netchat.entities.User;
 import netchat.netchatclient.transfermsg.QPClient;
+import netchat.netchatclient.transfermsg.SubscriberThread;
 import netchat.netchatclient.util.ClientInfo;
 import netchat.netchatclient.util.InputVerification;
-import netchat.netchatclient.view.chat.NetChatFrame;
-import netchat.netchatclient.view.chat.NetChatPanel;
+import netchat.netchatclient.view.friend.FriendFrame;
 
 /**
  * 登录面板
@@ -144,21 +142,14 @@ public class LoginPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String account = tfAccount.getText().trim();
 				String password = tfPassword.getText().trim();
-				String ip = null;
-				try {
-					ip = InetAddress.getLocalHost().getHostAddress();
-				} catch (UnknownHostException e1) {
-					e1.printStackTrace();
-				}
 
 				if (InputVerification.accountVerfication(account) && InputVerification.passwordVerfication(password)) {
 					Map<String, Object> map = new HashMap<String, Object>();
 					map.put("cmd", "login");
 					map.put("account", account);
 					map.put("password", password);
-					//修改本地信息
+					// 修改本地信息
 					ClientInfo.account = account;
-					ClientInfo.ip = ip;
 					// 发送服务器
 					String sendMsg = new Gson().toJson(map);
 					System.out.println(sendMsg); // TODO delete
@@ -166,34 +157,29 @@ public class LoginPanel extends JPanel {
 					System.out.println(rep); // TODO delete
 					// 解析接收信息
 					map = new Gson().fromJson(rep, Map.class);
-					String flag = (String) map.get("flag");
-					System.out.println(flag); //TODO
-					if ("true".equals(flag)) {
-						//改变登录信息
+					Boolean flag =  (Boolean) map.get("flag");
+					System.out.println(flag); // TODO
+					if (flag) {
+						// 改变登录信息
 						String username = (String) map.get("username");
 						ClientInfo.username = username;
-						NetChatPanel.getInstance().changeLoginInfo();
-						//注册本地端口
-						String jsonData = QPClient.sendAndReceiveMsg11("registerPort");
-						String port = (String) new Gson().fromJson(jsonData, Map.class).get("port");
-						ClientInfo.port = port;
-						map.clear();
-						map.put("cmd", "sign");
-						map.put("account", account);
-						map.put("ip", ip);
-						map.put("port", port);
-						sendMsg = new Gson().toJson(map);
-						System.out.println(sendMsg); // TODO delete
-						//广播本客户端的ip和端口
-//						rep = QPClient.sendAndReceiveMsg2(sendMsg);
-//						System.out.println(rep); // TODO delete
+						System.out.println("username: " + username);
+						List<Map<String, String>> friendList = (List<Map<String, String>>) map.get("friendList");
+						System.out.println(friendList.toString());
+						FriendFrame.getInstance().generateFriendList(friendList);
+						FriendFrame.getInstance().changePersonalInfo();
+						
 						try {
 							LoginFrame.getInstance().setVisible(false);
-							NetChatFrame.getInstance().setVisible(true);
+							FriendFrame.getInstance().setVisible(true);
 						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 								| UnsupportedLookAndFeelException e1) {
 							e1.printStackTrace();
 						}
+						
+						//开启订阅线程
+						new Thread(new SubscriberThread()).start();
+						
 					} else {
 						tfPassword.setText("");
 						lblMsg.setText("提示：账号或密码错误");

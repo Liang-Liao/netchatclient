@@ -3,8 +3,6 @@ package netchat.netchatclient;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import netchat.netchatclient.view.chat.NetChatFrame;
-import netchat.netchatclient.view.chat.NetChatPanel;
 import netchat.netchatclient.view.login.LoginFrame;
 import netchat.netchatclient.view.login.LoginPanel;
 import netchat.netchatclient.view.login.RegisterPanel;
@@ -19,8 +17,6 @@ public class Client {
 		LoginPanel.getInstance();
 		//加载注册界面
 		RegisterPanel.getInstance();
-		//加载聊天界面
-		NetChatPanel.getInstance();
 		
 		//启动登录界面
 		LoginFrame.getInstance();
