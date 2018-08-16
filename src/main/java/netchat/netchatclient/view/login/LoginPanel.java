@@ -153,7 +153,7 @@ public class LoginPanel extends JPanel {
 					// 发送服务器
 					String sendMsg = new Gson().toJson(map);
 					System.out.println(sendMsg); // TODO delete
-					String rep = QPClient.sendAndReceiveMsg1(sendMsg);
+					String rep = QPClient.sendAndReceiveMsg(sendMsg);
 					System.out.println(rep); // TODO delete
 					// 解析接收信息
 					map = new Gson().fromJson(rep, Map.class);
@@ -167,6 +167,7 @@ public class LoginPanel extends JPanel {
 						List<Map<String, String>> friendList = (List<Map<String, String>>) map.get("friendList");
 						System.out.println(friendList.toString());
 						FriendFrame.getInstance().generateFriendList(friendList);
+						FriendFrame.getInstance().generateFriendMsgList(friendList);
 						FriendFrame.getInstance().changePersonalInfo();
 						
 						try {

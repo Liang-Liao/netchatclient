@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.google.gson.Gson;
 
 import netchat.netchatclient.transfermsg.QPClient;
 import netchat.netchatclient.util.ClientInfo;
+import netchat.netchatclient.view.chat.FriendChatFrame;
 
 public class FriendFrame extends JFrame {
 	private static FriendFrame friendFrame;
@@ -32,8 +34,10 @@ public class FriendFrame extends JFrame {
 	private JPanel friendsPanel;
 	private JScrollPane scrollPane;
 	private Map<String, FriendPanel> friendMap;
+	private Map<String, FriendChatFrame> friendFrameMap;
 	private Map<String, List> friendMsgMap;
 	private Map<String, GroupPanel> groupMap;
+//	private Map<String, GroupChatFrame> groupFrameMap;
 	private Map<String, List> groupMsgMap;
 	private List<Map> applyList;
 
@@ -119,12 +123,14 @@ public class FriendFrame extends JFrame {
 				scrollPane.setViewportView(groupPanel);
 			}
 		});
+		
+		//初始化变量
+		friendMap = new HashMap<>();
+		friendMsgMap = new HashMap<>();
+		friendFrameMap = new HashMap<>();
 	}
 
 	public void generateFriendList(List<Map<String, String>> friendList) {
-		if (null == friendMap) {
-			friendMap = new HashMap<>();
-		}
 		int i = 0;
 		for (Map<String, String> friend : friendList) {
 //			System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName() + ":" + friend.toString());
@@ -135,6 +141,14 @@ public class FriendFrame extends JFrame {
 					.addMouseListener(new MyFriendMouseAdapter(friendMap.get(friend.get("account"))));
 			friendsPanel.add(friendMap.get(friend.get("account")));
 			i += 1;
+		}
+	}
+	
+	public void generateFriendMsgList(List<Map<String, String>> friendList) {
+		int i = 0;
+		for (Map<String, String> friend : friendList) {
+			List temp = new ArrayList();
+			friendMsgMap.put(friend.get("account"), temp);
 		}
 	}
 
@@ -154,7 +168,7 @@ public class FriendFrame extends JFrame {
 			map.put("account", ClientInfo.account);
 			String sendMsg = new Gson().toJson(map);
 			while (true) {
-				String rep = QPClient.sendAndReceiveMsg1(sendMsg);
+				String rep = QPClient.sendAndReceiveMsg(sendMsg);
 				// 解析接收信息
 				map = new Gson().fromJson(rep, Map.class);
 				String flag = (String) map.get("flag");
@@ -192,6 +206,14 @@ public class FriendFrame extends JFrame {
 
 	public void setFriendMsgMap(Map<String, List> friendMsgMap) {
 		this.friendMsgMap = friendMsgMap;
+	}
+
+	public Map<String, FriendChatFrame> getFriendFrameMap() {
+		return friendFrameMap;
+	}
+
+	public void setFriendFrameMap(Map<String, FriendChatFrame> friendFrameMap) {
+		this.friendFrameMap = friendFrameMap;
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException,

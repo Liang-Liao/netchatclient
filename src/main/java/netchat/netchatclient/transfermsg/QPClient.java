@@ -17,7 +17,7 @@ public class QPClient {
 		requester.connect("tcp://127.0.0.1:5555");
 	}
 
-	public static String sendAndReceiveMsg1(String msg) {
+	public static String sendAndReceiveMsg(String msg) {
 		requester.send(msg.getBytes(), 0);
 		return new String(requester.recv(0));
 	}

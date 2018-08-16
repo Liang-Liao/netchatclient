@@ -151,7 +151,7 @@ public class RegisterPanel extends JPanel {
 								map.put("password", password);
 								
 								String data = new Gson().toJson(map);
-								String reply = QPClient.sendAndReceiveMsg1(data);
+								String reply = QPClient.sendAndReceiveMsg(data);
 								map = new Gson().fromJson(reply, Map.class);
 								String account = (String) map.get("account");
 								if (null != account) {

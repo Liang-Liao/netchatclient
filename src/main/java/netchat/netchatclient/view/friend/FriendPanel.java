@@ -10,12 +10,14 @@ import javax.swing.JLabel;
 
 public class FriendPanel extends JPanel {
 	private String username, account, online;
+	private Boolean flag;
 	private JLabel lblOnline;
 
 	public FriendPanel(String username, String account, String online) {
 		this.username = username;
 		this.account = account;
 		this.online = online;
+		this.flag = false;
 		
 		setLayout(null);
 		setBackground(Color.WHITE);
@@ -76,5 +78,13 @@ public class FriendPanel extends JPanel {
 
 	public void setOnline(String online) {
 		this.online = online;
+	}
+
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
 	}
 }
