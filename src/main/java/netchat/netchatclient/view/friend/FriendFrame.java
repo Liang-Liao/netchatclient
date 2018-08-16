@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import netchat.netchatclient.transfermsg.QPClient;
 import netchat.netchatclient.util.ClientInfo;
 import netchat.netchatclient.view.chat.FriendChatFrame;
+import netchat.netchatclient.view.chat.GroupChatFrame;
 
 public class FriendFrame extends JFrame {
 	private static FriendFrame friendFrame;
@@ -37,7 +38,7 @@ public class FriendFrame extends JFrame {
 	private Map<String, FriendChatFrame> friendFrameMap;
 	private Map<String, List> friendMsgMap;
 	private Map<String, GroupPanel> groupMap;
-//	private Map<String, GroupChatFrame> groupFrameMap;
+	private Map<String, GroupChatFrame> groupFrameMap;
 	private Map<String, List> groupMsgMap;
 	private List<Map> applyList;
 
@@ -88,7 +89,7 @@ public class FriendFrame extends JFrame {
 		groupPanel.setLayout(null);
 
 		groupMap = new HashMap<>();
-		groupMap.put("1", new GroupPanel(1));
+		groupMap.put("1", new GroupPanel("1"));
 		groupMap.get("1").setBounds(0, 45 * 0, 215, 45);
 		groupMap.get("1").addMouseListener(new MyGroupMouseAdapter(groupMap.get("1")));
 		groupPanel.add(groupMap.get("1"));
@@ -128,6 +129,11 @@ public class FriendFrame extends JFrame {
 		friendMap = new HashMap<>();
 		friendMsgMap = new HashMap<>();
 		friendFrameMap = new HashMap<>();
+		
+		groupMsgMap = new HashMap<>();
+		groupFrameMap = new HashMap<>();
+		
+		groupMsgMap.put("1", new ArrayList());
 	}
 
 	public void generateFriendList(List<Map<String, String>> friendList) {
@@ -214,6 +220,30 @@ public class FriendFrame extends JFrame {
 
 	public void setFriendFrameMap(Map<String, FriendChatFrame> friendFrameMap) {
 		this.friendFrameMap = friendFrameMap;
+	}
+
+	public Map<String, GroupPanel> getGroupMap() {
+		return groupMap;
+	}
+
+	public void setGroupMap(Map<String, GroupPanel> groupMap) {
+		this.groupMap = groupMap;
+	}
+
+	public Map<String, GroupChatFrame> getGroupFrameMap() {
+		return groupFrameMap;
+	}
+
+	public void setGroupFrameMap(Map<String, GroupChatFrame> groupFrameMap) {
+		this.groupFrameMap = groupFrameMap;
+	}
+
+	public Map<String, List> getGroupMsgMap() {
+		return groupMsgMap;
+	}
+
+	public void setGroupMsgMap(Map<String, List> groupMsgMap) {
+		this.groupMsgMap = groupMsgMap;
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException,

@@ -21,20 +21,18 @@ import com.google.gson.Gson;
 import netchat.netchatclient.transfermsg.QPClient;
 import netchat.netchatclient.util.ClientInfo;
 import netchat.netchatclient.view.friend.FriendFrame;
-import netchat.netchatclient.view.friend.FriendPanel;
+import netchat.netchatclient.view.friend.GroupPanel;
 
-public class FriendChatFrame extends JFrame {
-	private String chatUsername;
-	private String chatAccount;
+public class GroupChatFrame extends JFrame {
+	private String group;
 	private JTextArea taDiaplay;
 	private JTextArea taInput;
 	
-	public FriendChatFrame(String username, String account) {
-		System.out.println(username + ":" + account);
-		this.chatUsername = username;
-		this.chatAccount = account;
+	public GroupChatFrame(String groupId) {
+		System.out.println(groupId);
+		this.group = groupId;
 		
-		setTitle("与 " + username + " 聊天");
+		setTitle("公共聊天室" + group);
 		setBounds(200, 200, 600, 500);
 		getContentPane().setLayout(null);
 		
@@ -77,21 +75,20 @@ public class FriendChatFrame extends JFrame {
 				
 				//处理信息
 				Map<String, Object> msgMap = new HashMap<>();
-				msgMap.put("cmd", "personalChat");
+				msgMap.put("cmd", "groupChat");
 				msgMap.put("fromAccount", ClientInfo.account);
 				msgMap.put("fromUsername", ClientInfo.username);
-				msgMap.put("toAccount", chatAccount);
+				msgMap.put("toGroup", group);
 				msgMap.put("msg", msg);
 				String rep = QPClient.sendAndReceiveMsg(new Gson().toJson(msgMap));
 				Map<String, Object> map = new Gson().fromJson(rep, Map.class);
 				if ((boolean) map.get("flag")) {
 					System.out.println("发送成功");
-					List chatMsgList = FriendFrame.getInstance().getFriendMsgMap().get(chatAccount);
+					List chatMsgList = FriendFrame.getInstance().getGroupMsgMap().get(group);
 					Map<String, String> oneMsg = new HashMap<>();
 					oneMsg.put("fromUsername", ClientInfo.username);
 					oneMsg.put("fromAccount", ClientInfo.account);
-					oneMsg.put("toUsername", chatUsername);
-					oneMsg.put("toAccount", chatAccount);
+					oneMsg.put("toGroup", group);
 					oneMsg.put("msg", msg);
 					chatMsgList.add(oneMsg);
 					displayMsg(ClientInfo.username, msg);
@@ -103,8 +100,8 @@ public class FriendChatFrame extends JFrame {
 		});
 		
 		//刷新聊天信息
-		Map friendMsgMap = FriendFrame.getInstance().getFriendMsgMap();
-		List<Map<String, String>> chatMsgList = FriendFrame.getInstance().getFriendMsgMap().get(chatAccount);
+		Map groupMsgMap = FriendFrame.getInstance().getGroupMsgMap();
+		List<Map<String, String>> chatMsgList = FriendFrame.getInstance().getGroupMsgMap().get(group);
 		for (Map<String, String> oneMsg : chatMsgList) {
 			displayMsg(oneMsg.get("fromUsername"), oneMsg.get("msg"));
 		}
@@ -112,9 +109,10 @@ public class FriendChatFrame extends JFrame {
 	
 	protected void processWindowEvent(WindowEvent e) {
 		if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-			FriendPanel friendPanel = FriendFrame.getInstance().getFriendMap().get(chatAccount);
-			friendPanel.setFlag(false);
-			FriendFrame.getInstance().getFriendFrameMap().put(chatAccount, null);
+			GroupPanel groupPanel = FriendFrame.getInstance().getGroupMap().get(group);
+			System.out.println(groupPanel);
+			groupPanel.setFlag(false);
+			FriendFrame.getInstance().getGroupFrameMap().put(group, null);
 			this.dispose();
 		}
 	}

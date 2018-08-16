@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 
 import netchat.netchatclient.util.ClientInfo;
 import netchat.netchatclient.view.chat.FriendChatFrame;
+import netchat.netchatclient.view.chat.GroupChatFrame;
 import netchat.netchatclient.view.friend.FriendFrame;
 import netchat.netchatclient.view.friend.FriendPanel;
 
@@ -51,6 +52,9 @@ public class SubscriberThread implements Runnable {
 			case "personalChat":
 				personalChat(msg);
 				break;
+			case "groupChat":
+				groupChat(msg);
+				break;
 			}
 		}
 	}
@@ -84,5 +88,22 @@ public class SubscriberThread implements Runnable {
 		if (null != friendChatFrame) {
 			friendChatFrame.displayMsg(msg.get("fromUsername"), msg.get("msg"));
 		}
+	}
+	
+	private void groupChat(Map<String, String> msg) {
+		Map groupMsgMap = FriendFrame.getInstance().getGroupMsgMap();
+		List chatMsgList = FriendFrame.getInstance().getGroupMsgMap().get(msg.get("toGroup"));
+		Map<String, String> oneMsg = new HashMap<>();
+		oneMsg.put("fromUsername", msg.get("fromUsername"));
+		oneMsg.put("fromAccount", msg.get("fromAccount"));
+		oneMsg.put("toGroup", msg.get("toGroup"));
+		oneMsg.put("msg", msg.get("msg"));
+		chatMsgList.add(oneMsg);
+
+		GroupChatFrame groupChatFrame = FriendFrame.getInstance().getGroupFrameMap().get(msg.get("toGroup"));
+		if (null != groupChatFrame) {
+			groupChatFrame.displayMsg(msg.get("fromUsername"), msg.get("msg"));
+		}
+		
 	}
 }

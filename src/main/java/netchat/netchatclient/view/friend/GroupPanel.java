@@ -11,15 +11,17 @@ import javax.swing.JPanel;
 public class GroupPanel extends JPanel {
 	private JLabel lblName;
 	private String groupId;
+	private boolean flag;
 	
-	public GroupPanel(int id) {
+	public GroupPanel(String groupId) {
 		setLayout(null);
 		setBackground(Color.WHITE);
 		setBounds(0, 0, 215, 45);
 		
-		groupId = new Integer(id).toString();
+		flag = false;
+		this.groupId = groupId;
 		
-		lblName = new JLabel("公共聊天室" + id);
+		lblName = new JLabel("公共聊天室" + groupId);
 		lblName.setBounds(0, 10, 100, 20);
 		add(lblName);
 	}
@@ -39,5 +41,14 @@ public class GroupPanel extends JPanel {
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+	
 	
 }
