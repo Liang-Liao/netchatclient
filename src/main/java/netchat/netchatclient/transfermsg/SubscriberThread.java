@@ -55,10 +55,14 @@ public class SubscriberThread implements Runnable {
 			case "groupChat":
 				groupChat(msg);
 				break;
+				
+			case "agreeFriend":
+				agreeFriend(msg);
+				break;
 			}
 		}
 	}
-
+	
 	private void friendOnline(Map<String, String> msg) {
 		String account = msg.get("onlineAccount");
 		Map<String, FriendPanel> friendMap = FriendFrame.getInstance().getFriendMap();
@@ -104,6 +108,13 @@ public class SubscriberThread implements Runnable {
 		if (null != groupChatFrame) {
 			groupChatFrame.displayMsg(msg.get("fromUsername"), msg.get("msg"));
 		}
-		
 	}
+	
+	private void agreeFriend(Map<String, String> msg) {
+		String account = msg.get("agreeAccount");
+		String username = msg.get("agreeUsername");
+		String online = msg.get("online");
+		FriendFrame.getInstance().addFriend(account, username, online);
+	}
+
 }

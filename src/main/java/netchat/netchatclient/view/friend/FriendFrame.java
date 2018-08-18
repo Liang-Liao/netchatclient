@@ -24,6 +24,8 @@ import com.google.gson.Gson;
 
 import netchat.netchatclient.transfermsg.QPClient;
 import netchat.netchatclient.util.ClientInfo;
+import netchat.netchatclient.view.addFriend.AddFriendFrame;
+import netchat.netchatclient.view.addFriend.ApplyListFrame;
 import netchat.netchatclient.view.chat.FriendChatFrame;
 import netchat.netchatclient.view.chat.GroupChatFrame;
 
@@ -125,6 +127,25 @@ public class FriendFrame extends JFrame {
 			}
 		});
 		
+		btAddFriend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				AddFriendFrame.getInstance().setVisible(true);
+			}
+		});
+		
+		btApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Map<String, String> sendMsg = new HashMap<>();
+				sendMsg.put("cmd", "applyList");
+				sendMsg.put("account", ClientInfo.account);
+				String rep = QPClient.sendAndReceiveMsg(new Gson().toJson(sendMsg));
+				Map<String, Object> repMap = new Gson().fromJson(rep, Map.class);
+				List<Map<String, Object>> applyList = (List<Map<String, Object>>) repMap.get("applyList");
+				System.out.println(applyList); //TODO
+				ApplyListFrame.getInstance().generateApplyList(applyList);
+				ApplyListFrame.getInstance().setVisible(true);
+			}
+		});
 		//初始化变量
 		friendMap = new HashMap<>();
 		friendMsgMap = new HashMap<>();
@@ -148,6 +169,20 @@ public class FriendFrame extends JFrame {
 			friendsPanel.add(friendMap.get(friend.get("account")));
 			i += 1;
 		}
+	}
+	
+	public void addFriend(String account, String username, String online) {
+		int index = friendMap.size();
+		friendMap.put(account,
+				new FriendPanel(username, account, online));
+		friendMap.get(account).setBounds(0, 45 * index, 215, 45);
+		friendMap.get(account)
+				.addMouseListener(new MyFriendMouseAdapter(friendMap.get(account)));
+		friendsPanel.add(friendMap.get(account));
+		
+		friendMsgMap.put(account, new ArrayList());
+		this.revalidate();
+		this.repaint();
 	}
 	
 	public void generateFriendMsgList(List<Map<String, String>> friendList) {

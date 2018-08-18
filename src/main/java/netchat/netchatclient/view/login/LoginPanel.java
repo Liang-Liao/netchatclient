@@ -157,30 +157,36 @@ public class LoginPanel extends JPanel {
 					System.out.println(rep); // TODO delete
 					// 解析接收信息
 					map = new Gson().fromJson(rep, Map.class);
-					Boolean flag =  (Boolean) map.get("flag");
-					System.out.println(flag); // TODO
+					Boolean flag = (Boolean) map.get("flag");
+					Double online = (Double) map.get("online");
+					System.out.println(map); // TODO
+
 					if (flag) {
-						// 改变登录信息
-						String username = (String) map.get("username");
-						ClientInfo.username = username;
-						System.out.println("username: " + username);
-						List<Map<String, String>> friendList = (List<Map<String, String>>) map.get("friendList");
-						System.out.println(friendList.toString());
-						FriendFrame.getInstance().generateFriendList(friendList);
-						FriendFrame.getInstance().generateFriendMsgList(friendList);
-						FriendFrame.getInstance().changePersonalInfo();
-						
-						try {
-							LoginFrame.getInstance().setVisible(false);
-							FriendFrame.getInstance().setVisible(true);
-						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-								| UnsupportedLookAndFeelException e1) {
-							e1.printStackTrace();
+						if (1.0 != online) {
+							// 改变登录信息
+							String username = (String) map.get("username");
+							ClientInfo.username = username;
+							System.out.println("username: " + username);
+							List<Map<String, String>> friendList = (List<Map<String, String>>) map.get("friendList");
+							System.out.println(friendList.toString());
+							FriendFrame.getInstance().generateFriendList(friendList);
+							FriendFrame.getInstance().generateFriendMsgList(friendList);
+							FriendFrame.getInstance().changePersonalInfo();
+
+							try {
+								LoginFrame.getInstance().setVisible(false);
+								FriendFrame.getInstance().setVisible(true);
+							} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+									| UnsupportedLookAndFeelException e1) {
+								e1.printStackTrace();
+							}
+
+							// 开启订阅线程
+							new Thread(new SubscriberThread()).start();
+						} else {
+							tfPassword.setText("");
+							lblMsg.setText("提示：用户已登录");
 						}
-						
-						//开启订阅线程
-						new Thread(new SubscriberThread()).start();
-						
 					} else {
 						tfPassword.setText("");
 						lblMsg.setText("提示：账号或密码错误");
@@ -190,7 +196,9 @@ public class LoginPanel extends JPanel {
 					lblMsg.setText("提示：账号或密码为空");
 				}
 			}
+
 		});
+
 	}
 
 	private void cancelBackground(JPanel centerPanel) {
